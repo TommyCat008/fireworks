@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>水波图</title>
+        <style>
+            html,
+            body {
+                margin: 0;
+            }
+
+            #canvas {
+                display: block;
+                margin: auto;
+                border: 1px solid #999;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="canvas" width="800" height="800"></canvas>
+    </body>
+    <script type="module">
+        import {Create} from '../dist/main.js';
+        const canvas = new Create('canvas');
+        let offset = 0;
+        let offsetNext = 2;
+        let percent = 100;
+        const radius = 200;
+
+        // 绘制过渡效果
+
+        function wave(options) {
+            const {waveWidth, waveHeight, offset, color} = options;
+            const grd = canvas.ctx.createLinearGradient(0, 0, 200, 200);
+            grd.addColorStop(0, color[0]);
+            grd.addColorStop(1, color[1]);
+            /**
+             * 会追正弦曲线
+             * y = A sin(Bx + C) + D
+             * A 是振幅，A越大越陡峭
+             * 一个周期是 2π/B B大于1的时候，周期越短，B大于0小于1的时候周期很长
+             * 相移量C，C为正值的时候向左移动，C位负值的时候向右移动
+             * 垂直位移量D，控制上下移动
+             */
+            canvas.save();
+            canvas.ctx.beginPath();
+            const x = (radius * percent) / 100;
+            for (let i = -x; i <= x; i += 1) {
+                const y = waveHeight * Math.sin(i * waveWidth + offset);
+                canvas.ctx.lineTo(i, y);
+            }
+            canvas.ctx.arc(0, 0, 200, 0, Math.PI);
+            canvas.ctx.fillStyle = grd;
+            canvas.ctx.clip();
+            canvas.ctx.fill();
+            canvas.restore();
+        }
+
+        function drawBattery() {
+            canvas.clearCanvas();
+            canvas.save();
+            canvas.setStartPoint(400, 400);
+            // 画圆
+            canvas.drawCircle({x: 0, y: 0}, radius, {
+                fillStyle: '#fff',
+                strokeColor: '#666'
+            });
+
+            wave({
+                waveWidth: 0.03,
+                waveHeight: 8,
+                offset,
+                color: ['#F39C6B', '#A0563B']
+            });
+            wave({
+                waveWidth: 0.044,
+                waveHeight: 4,
+                offset: offsetNext,
+                color: ['rgba(243, 156, 107, 0.48)', 'rgba(160, 86, 59, 0.3)']
+            });
+
+            canvas.restore();
+
+            offset += 0.06;
+            offsetNext += 0.04;
+            // percent++;
+            // if (percent === 100) {
+            //     percent = 0;
+            // }
+            requestAnimationFrame(drawBattery);
+        }
+
+        drawBattery();
+    </script>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>贝塞尔曲线</title>
+    </head>
+    <style>
+        html,
+        body {
+            margin: 0;
+        }
+
+        #canvas {
+            display: block;
+            margin: auto;
+            border: 1px solid #e9e9e9;
+        }
+    </style>
+    <body>
+        <canvas id="canvas" width="800" height="800"></canvas>
+    </body>
+    <script type="module">
+        import {Create} from '../dist/main.js';
+
+        const canvas = new Create('canvas', {
+            background: '#fff'
+        });
+
+        const paths = [
+            {x: 100, y: 100},
+            {x: 200, y: 600},
+            {x: 300, y: 300},
+            {x: 400, y: 600},
+            {x: 500, y: 200},
+            {x: 600, y: 400},
+            {x: 700, y: 600}
+        ];
+
+        function drawLine() {
+            canvas.drawMultipleLine(paths, {
+                isLineDash: false,
+                width: 2,
+                strokeStyle: '#2072b8'
+            });
+        }
+
+        function drawBezierCurve() {
+            canvas.drawBezierCurve(paths, {
+                color: '#2072b8',
+                lineWidth: 2
+            });
+        }
+
+        function drawAnimationBezierCurve() {
+            canvas.drawAnimationBezierCurve(paths, {
+                color: '#2072b8',
+                lineWidth: 2
+            });
+        }
+        
+        drawAnimationBezierCurve();
+
+        // 绘制拐点
+        paths.forEach((path) => {
+            canvas.drawPoint(path.x, path.y, 4, {color: '#2072b8'});
+        });
+    </script>
+</html>
